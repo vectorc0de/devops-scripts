@@ -1,0 +1,153 @@
+Mappings:
+  RegionMap:
+    ap-south-1:
+      "AMI": "ami-02a2af70a66af6dfb"
+    eu-north-1:
+      "AMI": "ami-0c4bbc65e1e707f79"
+    eu-west-3:
+      "AMI": "ami-07645091ff32f4871"
+    eu-west-2:      
+      "AMI": "ami-0cfd0973db26b893b"
+    eu-west-1:
+      "AMI": "ami-01724280eb1a6eb5f"
+    ap-northeast-3:
+      "AMI": "ami-035322b237ca6d47a"
+    ap-northeast-2:
+      "AMI": "ami-01123b84e2a4fba05"
+    ap-northeast-1:
+      "AMI": "ami-012261b9035f8f938"
+    ca-central-1:
+      "AMI": "ami-095819c19b51bc983"
+    sa-east-1:        
+      "AMI": "ami-05dc908211c15c11d"
+      # Debian 11 (original)
+      # "AMI": "ami-05024ca33ad4fc994"
+    ap-southeast-1:
+      "AMI": "ami-0a550a72344bcc5ee"
+    ap-southeast-2:
+      "AMI": "ami-0361bbf2b99f46c1d"
+    eu-central-1:
+      "AMI": "ami-0669b163befffbdfc"
+    us-east-1:
+      # CentOS 7.9
+      # "AMI": "ami-0b320e43c9f810fcb"
+      # Amazon Linux 2023
+      "AMI": "ami-0230bd60aa48260c6"
+    us-east-2:
+      "AMI": "ami-06d4b7182ac3480fa"
+    us-west-1:
+      "AMI": "ami-06e4ca05d431835e9"
+    us-west-2:
+      "AMI": "ami-093467ec28ae4fe03"
+
+Resources:
+  ListS3BucketsInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - !Ref ListS3BucketsRole
+
+  ListS3BucketsPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: ListS3BucketsPolicy
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:*'
+            Resource: '*'
+      Roles:
+        - !Ref ListS3BucketsRole
+
+  ListS3BucketsRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /  
+
+  ImportedKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: NameForMyImportedKeyPair
+      PublicKeyMaterial: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBLA/MlkFEPSuBYzspiuSngmdghXRYWA2HAR5klkcfhT3VsYz6Ct0Ee0FFSa0gJ+HP59VLU7nTNsFMJddCAjdlv11VT9dNj5Z5TCYsxPtLZ8cw/oVftGiww/3DNOIXDhZBnCvEtHl/wQLtt8GASpgdECFQa7pyDfWs03d2wTEBmCdiI99Nx9RxsAVxt78SWuAFkrzpKPQQ7p+4j7RlVfRkEByWthfuDZU4PBriDVAn8m+f1t9ljr5xjSmx5ERGMGPowDtoPkSqcgtt5RUyasPFw+UtkgxVUm+YEZjZqNIKAAW4coloRNyqQgzQDhNX+INL8nSUPukLDvu1F7sNVjpKHLSqOh++wxdtehKdb6HIYpWTuf2reMIRpwBYUuxxMwuFuCpclm/cVh7ZZhYO4NH8eaJM59mq/x4no664W1sdQVrM+hoqkhFkT55Xa+iopYid28+XqtBRMh3CLRqXjPUHjD1u7DEm3WZjdFteRdKicbpw7yRmmxZSHSmn+23jdqc=
+
+  InstanciaEC2:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", AMI]
+      InstanceType: "t2.micro"
+      KeyName: !Ref ImportedKeyPair      
+      IamInstanceProfile: !Ref ListS3BucketsInstanceProfile
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          SubnetId: !Ref Subnet
+          GroupSet:
+            - Ref: "SecurityGroupSSH"
+      UserData: IyEvYmluL2Jhc2gKCnl1bSBncm91cGluc3RhbGwgLXkgIkRldmVsb3BtZW50IFRvb2xzIjsKeXVtIGluc3RhbGwgLXkgZ3RrMyBsaWJkcm0gcHVsc2VhdWRpbyBweXRob24zLXBpcCBsaWJnYm07Cm1rZGlyIC9zY3JpcHQKY2QgL3NjcmlwdAphd3MgczMgY3AgLS1yZWN1cnNpdmUgczM6Ly9saXNjcmFwcGVyMDAxL3NjcmlwdHMvIC47CnBpcDMgaW5zdGFsbCAtciByZXF1ZXJpbWVudHMudHh0OwpwbGF5d3JpZ2h0IGluc3RhbGw7CgppPTAKZm9yIGkgaW4gJChzZXEgMSAyMCk7IGRvCgogIHB5dGhvbjMgL3NjcmlwdC9sYW1iZGFfZnVuY3Rpb24ucHkKCmRvbmUKCnBvd2Vyb2ZmCg==
+
+  SecurityGroupSSH:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "SG SSH"
+      VpcId: !Ref  VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.0.0/24
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  GatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnetRoute:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - InternetGateway
+      - RouteTable
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  PublicSubnetRouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Subnet
+      RouteTableId: !Ref RouteTable
+
+Outputs:
+  SubnetId:
+    Value: !Ref Subnet

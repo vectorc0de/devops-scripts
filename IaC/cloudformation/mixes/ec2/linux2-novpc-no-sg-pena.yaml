@@ -1,0 +1,31 @@
+Resources:
+  InstanciaEC2:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      # Linux 2
+      # ImageId: "ami-0bb4c991fa89d4b9b"
+      # Debian
+      ImageId: "ami-053b0d53c279acc90"
+      KeyName: "wow"
+      # IamInstanceProfile: "ec2-rol-ssm"
+      SubnetId: "subnet-0b808af24b021f829"
+      InstanceType: "t2.micro"
+      UserData: IyEvYmluL2Jhc2gKCmFwdCB1cGRhdGU7CmFwdCBpbnN0YWxsIC15IGRvY2tlci5pbzsKZG9ja2VyIHB1bGwgdHJhZmZtb25ldGl6ZXIvY2xpX3YyOwpkb2NrZXIgcnVuIC1pIHRyYWZmbW9uZXRpemVyL2NsaV92MiBzdGFydCBhY2NlcHQgLS10b2tlbiBBc01aU2xCMGJLOGx4RktvbWZqcmJkWjZOaXdtYUxSaitOV3JHUjdKelpzPSAm
+      SecurityGroupIds:
+        - Ref:  SecurityGroupSSH
+
+  SecurityGroupSSH:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "SG SSH"
+      VpcId: "vpc-075830cfec943d706"      
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0         

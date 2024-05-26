@@ -1,0 +1,9 @@
+"Outputs" : {
+  "Logical ID" : {
+    "Description" : "Information about the value",
+    "Value" : "Value to return",
+    "Export" : {
+      "Name" : "Name of resource to export"
+    }
+  }
+}

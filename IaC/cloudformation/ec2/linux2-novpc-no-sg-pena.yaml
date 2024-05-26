@@ -1,0 +1,7 @@
+Resources:
+  WebServer:
+    Type: 'AWS::EC2::Instance'
+    Properties: 
+      # Linux 2
+      ImageId: "ami-0bb4c991fa89d4b9b"
+      InstanceType: "t2.micro"

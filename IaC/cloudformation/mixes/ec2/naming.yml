@@ -1,0 +1,13 @@
+"ec2-instance" : {
+    "Type" : "AWS::EC2::Instance",
+    "Properties" : {
+        "ImageId" : "ami-0102022,
+        "SecurityGroupIds" : [{ "Ref" : "SecurityGroup" }],
+        "SubnetId" : { "Ref" : "Subnet" },
+        "InstanceType" : "m1.medium",
+        "Tags" : [
+            {"Key" : "Name", "Value" : "Instance name"},
+            {"Key" : "Environment", "Value" : { "Ref" : "Environment" }},
+            {"Key" : "Owner", "Value" : { "Ref" : "Owner" }}
+        ]
+    }

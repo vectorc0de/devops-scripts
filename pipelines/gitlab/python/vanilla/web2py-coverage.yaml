@@ -1,0 +1,39 @@
+image: python:3.10
+
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  APP_NAME: web2py_coverage
+  TEST_COVERAGE: 80
+
+before_stage:
+  - apt-get update && apt-get install -y python3-pip
+
+build:
+  stage: build
+  script:
+    - pip install -r requirements.txt
+    - python setup.py build
+
+test:
+  stage: test
+  script:
+    - coverage run -m unittest discover
+    - coverage report
+    - if [ "$(coverage report | grep -c '80%')" -lt "$TEST_COVERAGE" ]; then
+        echo "Error: Test coverage must be at least ${TEST_COVERAGE}%. Exiting.";
+        exit 1;
+      fi
+
+deploy:
+  stage: deploy
+  script:
+    - if [ "$CI_BRANCH" = "main" ]; then
+        echo "Deploying to production...";
+        cp -r dist/* /var/www/${APP_NAME};
+      else
+        echo "Skipping deployment for branch: $CI_BRANCH";
+      fi

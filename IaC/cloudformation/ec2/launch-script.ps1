@@ -1,0 +1,1 @@
+aws cloudformation delete-stack --stack-name $var --profile opensylar; $var=-join ((65..90) + (97..122) | Get-Random -Count 5 | % {[char]$_}); aws cloudformation deploy --stack-name $var --template-file "vpc_sg_subnet.yml" --profile=$profile --parameter-overrides  VPCId="vpc-0d5e7496ae51109a1", SubnetId="subnet-00bcd5b5b2603a46b"  --region "us-east-1" --profile "opensylar"

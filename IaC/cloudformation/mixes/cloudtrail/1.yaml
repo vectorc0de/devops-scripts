@@ -1,0 +1,21 @@
+Resources:
+  Trail:
+    Type: AWS::CloudTrail::Trail
+    Properties:
+      TrailName: "m0c0sTrailNam3"
+      S3BucketName: "mylatinolist.com"
+      S3KeyPrefix: "j0d3r"
+      IsLogging: false
+      EnableLogFileValidation: false
+      IncludeGlobalServiceEvents: false
+      IsMultiRegionTrail: false
+      IsOrganizationTrail: false
+      KMSKeyId: "arn:aws:kms:us-east-1:595684195164:key/50d216a3-e54e-4623-b2c3-6c795cad2d8d"
+      CloudWatchLogsLogGroupArn: ""
+      CloudWatchLogsRoleArn: ""
+
+  TrailLogGroup:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      LogGroupName: "my-log-group"
+      RetentionInDays: 7

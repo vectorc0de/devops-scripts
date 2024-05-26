@@ -1,0 +1,6 @@
+Resources:
+  EC201:
+    Type: 'AWS::EC2::Instance'
+    Properties: 
+      ImageId: "ami-03ededff12e34e59e"
+      InstanceType: "t3.micro"

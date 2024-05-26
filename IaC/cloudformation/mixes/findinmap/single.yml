@@ -1,0 +1,20 @@
+Mappings:
+  MorpheusMap:
+    VpcNamePeeringVendor:
+      Name: "<%=customOptions.VpcNamePeeringVendor%>"
+    SecurityGroupVendor:
+      Name: "<%=customOptions.SecurityGroupVendor%>"
+
+Parameters:
+  VPCPublicNameParameter:
+    Type: String    
+
+Resources:
+  VPCPublica:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 171.31.0.0/16
+      Tags:
+      - Key: Name
+        Value:
+          Ref: VPCPublicNameParameter

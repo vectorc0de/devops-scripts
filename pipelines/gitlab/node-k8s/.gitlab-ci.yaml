@@ -1,0 +1,63 @@
+image: node:latest  # Replace with your containerized build image
+
+stages:
+  - build
+  - test
+  - deploy-dev
+  - deploy-qa
+  - deploy-prod
+
+variables:
+  APP_NAME: my-app
+  ENVIRONMENT: $CI_ENVIRONMENT_NAME  # Set by GitLab CI/CD environment variables
+
+.shared/build: &build
+  script:
+    - npm ci
+    - npm run build -- --prod
+
+.shared/test: &test
+  script:
+    - npm run test
+
+.shared/deploy: &deploy
+  script:
+    - kubectl apply -f k8s/$ENVIRONMENT/deployment.yaml
+    - kubectl apply -f k8s/$ENVIRONMENT/service.yaml
+
+build:
+  stage: build
+  only:
+    - master
+
+test:
+  stage: test
+  only:
+    - master
+  script:
+    - *shared/build
+    - *shared/test
+
+deploy-dev:
+  stage: deploy-dev
+  only:
+    - master
+  script:
+    - ENVIRONMENT=dev
+    - *shared/deploy
+
+deploy-qa:
+  stage: deploy-qa
+  only:
+    - tags
+  script:
+    - ENVIRONMENT=qa
+    - *shared/deploy
+
+deploy-prod:
+  stage: deploy-prod
+  only:
+    - master
+  script:
+    - ENVIRONMENT=prod
+    - *shared/deploy

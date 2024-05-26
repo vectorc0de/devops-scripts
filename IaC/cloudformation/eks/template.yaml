@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create an EKS cluster with m5.xlarge instances
+
+Parameters:
+  ClusterName:
+    Type: String
+    Description: The name of the EKS cluster
+  NodeInstanceType:
+    Type: String
+    Default: m5.xlarge
+    Description: The type of instance to use for nodes
+
+Resources:
+  Cluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+      Version: 1.21
+
+  NodeGroup:
+    Type: AWS::EKS::NodeGroup
+    Properties:
+      ClusterName: !Ref Cluster
+      NodeRole: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+      MinNodes: 2
+      MaxNodes: 10
+      NodeInstanceType: !Ref NodeInstanceType
+
+Outputs:
+  ClusterName:
+    Value: !Ref Cluster

@@ -1,0 +1,33 @@
+Output:
+  LoQueSea:
+    Value: !Ref: InstanciaEC2
+    Export:
+      Name: "lalalal"
+
+Resources:
+  InstanciaEC2:
+    Type: 'AWS::EC2::Instance'
+    Properties: 
+      ImageId: "ami-053b0d53c279acc90"
+      KeyName: "tf-test"
+      IamInstanceProfile: "ec2-rol-ssm"
+      InstanceType: "t2.micro"
+      SecurityGroupIds: 
+        - Ref:  SecurityGroupSSH
+
+  SecurityGroupSSH:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "SG SSH"
+      VpcId: "vpc-0d9a9acddc4ccae02"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0         
+  
