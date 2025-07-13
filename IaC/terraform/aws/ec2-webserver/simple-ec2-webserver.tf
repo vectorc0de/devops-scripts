@@ -1,6 +1,3 @@
-Puedes hacer una descripcion de este terraform en ingles de un nativo de Washington?
-
-
 # Configure AWS provider with conditional region selection
 provider "aws" {
   region = var.aws_region ? var.aws_region : "us-east-1"
