@@ -1,4 +1,4 @@
-image: node:latest  # Replace with your containerized build image
+image: node:latest
 
 stages:
   - build
@@ -8,8 +8,8 @@ stages:
   - deploy-prod
 
 variables:
-  APP_NAME: my-app
-  ENVIRONMENT: $CI_ENVIRONMENT_NAME  # Set by GitLab CI/CD environment variables
+  APP_NAME: app001
+  ENVIRONMENT: $CI_ENVIRONMENT_NAME 
 
 .shared/build: &build
   script:
@@ -35,8 +35,8 @@ test:
   only:
     - master
   script:
-    - *shared/build
-    - *shared/test
+    - shared/build
+    - shared/test
 
 deploy-dev:
   stage: deploy-dev
@@ -44,7 +44,7 @@ deploy-dev:
     - master
   script:
     - ENVIRONMENT=dev
-    - *shared/deploy
+    - shared/deploy
 
 deploy-qa:
   stage: deploy-qa
@@ -52,7 +52,7 @@ deploy-qa:
     - tags
   script:
     - ENVIRONMENT=qa
-    - *shared/deploy
+    - shared/deploy
 
 deploy-prod:
   stage: deploy-prod
@@ -60,4 +60,4 @@ deploy-prod:
     - master
   script:
     - ENVIRONMENT=prod
-    - *shared/deploy
+    - shared/deploy
